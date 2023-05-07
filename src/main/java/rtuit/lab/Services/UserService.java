@@ -157,7 +157,6 @@ public class UserService implements UserDetailsService {
 
     public ResponseEntity<?> userEdit(UserDTO userDTO, Authentication authentication) {
         User user = getUserAuth(authentication);
-
         try {
             user.setUsername(userDTO.getUsername());
             user.setEmail(userDTO.getEmail());

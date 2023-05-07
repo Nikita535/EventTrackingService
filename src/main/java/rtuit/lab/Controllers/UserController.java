@@ -9,7 +9,7 @@ import rtuit.lab.DTO.UserDTO;
 import rtuit.lab.Services.UserService;
 
 @RestController
-@Secured({"ROLE_ADMIN","ROLE_USER"})
+@Secured({"ROLE_ADMIN","ROLE_USER","ROLE_ORGANIZER"})
 @RequestMapping("/api/user/")
 public class UserController {
 
