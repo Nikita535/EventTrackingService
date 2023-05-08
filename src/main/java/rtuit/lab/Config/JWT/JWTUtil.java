@@ -24,7 +24,11 @@ public class JWTUtil {
     private SignatureAlgorithm SIGNATURE_ALGORITHM = SignatureAlgorithm.HS256;
 
 
-
+    /**
+     *
+     * @param token
+     * @return
+     */
     private Claims getAllClaimsFromToken(String token) {
         Claims claims;
         try {
@@ -39,6 +43,11 @@ public class JWTUtil {
     }
 
 
+    /**
+     *
+     * @param token
+     * @return
+     */
     public String getUsernameFromToken(String token) {
         String username;
         try {
@@ -50,6 +59,11 @@ public class JWTUtil {
         return username;
     }
 
+    /**
+     *
+     * @param username
+     * @return
+     */
     public String generateToken(String username){
 
         return Jwts.builder()
@@ -61,10 +75,20 @@ public class JWTUtil {
                 .compact();
     }
 
+    /**
+     *
+     * @return
+     */
     private Date generateExpirationDate() {
         return new Date(new Date().getTime() + expiresIn * 1000);
     }
 
+    /**
+     *
+     * @param token
+     * @param userDetails
+     * @return
+     */
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = getUsernameFromToken(token);
         return (
@@ -74,12 +98,22 @@ public class JWTUtil {
         );
     }
 
+    /**
+     *
+     * @param token
+     * @return
+     */
     public boolean isTokenExpired(String token) {
         Date expireDate=getExpirationDate(token);
         return expireDate.before(new Date());
     }
 
 
+    /**
+     *
+     * @param token
+     * @return
+     */
     private Date getExpirationDate(String token) {
         Date expireDate;
         try {
@@ -92,6 +126,11 @@ public class JWTUtil {
     }
 
 
+    /**
+     *
+     * @param token
+     * @return
+     */
     public Date getIssuedAtDateFromToken(String token) {
         Date issueAt;
         try {
@@ -103,6 +142,11 @@ public class JWTUtil {
         return issueAt;
     }
 
+    /**
+     *
+     * @param request
+     * @return
+     */
     public String getToken( HttpServletRequest request ) {
 
         String authHeader = getAuthHeaderFromHeader( request );
@@ -113,6 +157,11 @@ public class JWTUtil {
         return null;
     }
 
+    /**
+     *
+     * @param request
+     * @return
+     */
     public String getAuthHeaderFromHeader( HttpServletRequest request ) {
         return request.getHeader("Authorization");
     }

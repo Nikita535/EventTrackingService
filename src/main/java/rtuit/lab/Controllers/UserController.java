@@ -1,42 +1,55 @@
 package rtuit.lab.Controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import rtuit.lab.Controllers.ControllerImpl.AuthControllerImpl;
 import rtuit.lab.DTO.UserDTO;
-import rtuit.lab.Services.RegistrationService;
-import rtuit.lab.Services.UserService;
 
 import java.security.Principal;
 
-@RestController
-@Secured({"ROLE_ADMIN","ROLE_USER","ROLE_ORGANIZER"})
-@RequestMapping("/api/user/")
-public class UserController {
-
-    @Autowired
-    UserService userService;
-
-    @Autowired
-    RegistrationService registrationService;
-
-    @PostMapping("/edit")
-    public ResponseEntity<?> editController(@RequestBody UserDTO userDTO, Authentication authentication){
-        return userService.userEdit(userDTO,authentication);
-    }
-
-    @PostMapping("/deleteUser")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<?> deleteUser(@RequestParam Long id){
-        return userService.deleteUser(id);
-    }
-
-    @PostMapping("/register")
-    @PreAuthorize("hasAuthority('ROLE_USER')")
-    public ResponseEntity<?> registerOnEvent(@RequestParam String tag, Principal principal){
-        return registrationService.registerUserOnEvent(tag,principal);
-    }
+public interface UserController {
+    @Operation(
+            tags = "Изменить данные учетной записи",
+            summary = "Смена данных",
+            responses = {
+                    @ApiResponse(responseCode = "200",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE)),
+                    @ApiResponse(responseCode = "401")
+            }
+    )
+    ResponseEntity<?> editController(@RequestBody UserDTO userDTO, Authentication authentication);
+    @Operation(
+            tags = "Удалить пользователя",
+            summary = "Удаление пользователя",
+            responses = {
+                    @ApiResponse(responseCode = "200",
+                            content = @Content(
+                                    schema = @Schema(implementation = AuthControllerImpl.JwtResponse.class),
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE)),
+                    @ApiResponse(responseCode = "401"),
+                    @ApiResponse(responseCode = "403")
+            }
+    )
+    ResponseEntity<?> deleteUser(@RequestParam Long id);
+    @Operation(
+            tags = "Зарегистрироваться на событие",
+            summary = "Регистрация проведена",
+            responses = {
+                    @ApiResponse(responseCode = "200",
+                            content = @Content(
+                                    schema = @Schema(implementation = AuthControllerImpl.JwtResponse.class),
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE)),
+                    @ApiResponse(responseCode = "401"),
+                    @ApiResponse(responseCode = "403")
+            }
+    )
+    ResponseEntity<?> registerOnEvent(@RequestParam String tag, Principal principal);
 }

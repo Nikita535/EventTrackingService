@@ -10,7 +10,7 @@ import rtuit.lab.Models.User;
 import rtuit.lab.Repositories.EventRepository;
 import rtuit.lab.Repositories.RegistrationRepository;
 import rtuit.lab.Repositories.UserRepository;
-import rtuit.lab.Services.EmailService;
+import rtuit.lab.Services.ServiceImpl.EmailService;
 
 import javax.mail.MessagingException;
 import java.time.Duration;

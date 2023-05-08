@@ -12,6 +12,7 @@ import javax.validation.constraints.Size;
 @Setter
 @Component
 public class RegisterRequestDTO {
+
     @NotNull(message = "Имя должно быть введено.")
     @Size(min = 4, message = "Длина имени должна быть минимум из четырёх символов.")
     private String username;

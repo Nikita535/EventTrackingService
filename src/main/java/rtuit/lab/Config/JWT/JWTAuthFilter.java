@@ -7,7 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import rtuit.lab.Services.UserService;
+import rtuit.lab.Services.ServiceImpl.UserService;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -22,6 +22,14 @@ public class JWTAuthFilter extends OncePerRequestFilter {
     private final UserService userService;
     private final JWTUtil jwtUtil;
 
+    /**
+     *
+     * @param request
+     * @param response
+     * @param filterChain
+     * @throws ServletException
+     * @throws IOException
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authToken = jwtUtil.getToken(request);

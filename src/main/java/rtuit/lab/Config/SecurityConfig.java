@@ -17,7 +17,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import rtuit.lab.Config.JWT.JWTAuthFilter;
 import rtuit.lab.Config.JWT.JWTUtil;
-import rtuit.lab.Services.UserService;
+import rtuit.lab.Services.ServiceImpl.UserService;
 
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -29,6 +29,12 @@ public class SecurityConfig {
     private final JWTUtil jwtUtil;
     private final AuthenticationEntryPoint authenticationEntryPoint;
 
+    /**
+     *
+     * @param httpSecurity
+     * @return
+     * @throws Exception
+     */
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity httpSecurity) throws Exception{
         return httpSecurity
@@ -38,11 +44,21 @@ public class SecurityConfig {
                 .and().build();
     }
 
+    /**
+     *
+     * @return
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(12);
     }
 
+    /**
+     *
+     * @param httpSecurity
+     * @return
+     * @throws Exception
+     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
@@ -55,7 +71,8 @@ public class SecurityConfig {
                 .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint)
                 .and()
                 .authorizeHttpRequests()
-                .antMatchers("/api/auth/register", "/api/auth/login","/activate/*").permitAll()
+                .antMatchers("/api/auth/register", "/api/auth/login","/activate/*","/**").permitAll()
+
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(new JWTAuthFilter(userService, jwtUtil), UsernamePasswordAuthenticationFilter.class)

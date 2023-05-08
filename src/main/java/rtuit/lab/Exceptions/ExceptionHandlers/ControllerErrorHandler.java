@@ -23,6 +23,14 @@ import java.util.List;
 public class ControllerErrorHandler extends ResponseEntityExceptionHandler {
 
 
+    /**
+     *
+     * @param ex the exception
+     * @param headers the headers to be written to the response
+     * @param status the selected response status
+     * @param request the current request
+     * @return
+     */
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers,
                                                                   HttpStatus status, WebRequest request) {
         FieldErrorResponse fieldErrorResponse = new FieldErrorResponse();
@@ -40,6 +48,11 @@ public class ControllerErrorHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(fieldErrorResponse, status);
     }
 
+    /**
+     *
+     * @param ex
+     * @return
+     */
     @ExceptionHandler(EventServiceExceptions.class)
     public ResponseEntity<?> handleException(ExceptionWrapper ex) {
         return ResponseEntity
@@ -47,6 +60,11 @@ public class ControllerErrorHandler extends ResponseEntityExceptionHandler {
                 .body(new ExceptionResponse(ex.getCode(), ex.getMessage()));
     }
 
+    /**
+     *
+     * @param code
+     * @param message
+     */
     @JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.NAME)
     @JsonTypeName("error")
     public record ExceptionResponse(String code, String message) {
