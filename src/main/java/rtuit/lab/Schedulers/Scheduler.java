@@ -7,11 +7,14 @@ import rtuit.lab.Models.Event;
 import rtuit.lab.Models.Registration;
 import rtuit.lab.Models.Role;
 import rtuit.lab.Models.User;
+import rtuit.lab.Repositories.EventRepository;
 import rtuit.lab.Repositories.RegistrationRepository;
 import rtuit.lab.Repositories.UserRepository;
 import rtuit.lab.Services.EmailService;
 
 import javax.mail.MessagingException;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -20,6 +23,9 @@ public class Scheduler {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    EventRepository eventRepository;
 
     @Autowired
     RegistrationRepository registrationRepository;
@@ -37,6 +43,22 @@ public class Scheduler {
                 String message = "Привет, " + user.getUsername() + "!" +
                         " Это напоминание о том, что ты зарегистрирован на событие - " + userEvent.getTitle();
                 emailService.sendSimpleMessage(user.getEmail(), message);
+            }
+
+        }
+    }
+
+    @Scheduled(fixedDelay = 60000)
+    public void deleteExpiredEvents(){
+        List<User> allUsualUsers = userRepository.findAll().stream()
+                .filter(user -> user.getAuthorities().contains(Role.ROLE_USER)).toList();
+        for(User user : allUsualUsers){
+            List<Event> userEvents = registrationRepository.findAllByUser(user).stream().map(Registration::getEvent).toList();
+            for (Event userEvent : userEvents) {
+                if(Duration.between(LocalDateTime.now(),userEvent.getEndDate()).getSeconds() == 0){
+                    registrationRepository.deleteAllByEvent(userEvent);
+                    eventRepository.delete(userEvent);
+                }
             }
 
         }

@@ -3,6 +3,7 @@ package rtuit.lab.Services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import rtuit.lab.DTO.EventDTO;
 import rtuit.lab.Exceptions.ModelsExceptions.EventServiceException.EventAlreadyExistsException;
 import rtuit.lab.Exceptions.ModelsExceptions.EventServiceException.EventNotFoundException;
@@ -75,11 +76,14 @@ public class EventService {
         }
     }
 
+    @Transactional
     public ResponseEntity<?> deleteEvent(EventDTO eventDTO,Principal principal) {
         User userAuth = getUserAuth(principal);
         Long id = eventRepository.findEventByTag(eventDTO.getTag()).orElseThrow().getId();
         if (userAuth.getId().equals(id)){
-            eventRepository.delete(eventRepository.findEventByTag(eventDTO.getTag()).get());
+            Event event = eventRepository.findEventByTag(eventDTO.getTag()).get();
+            registrationRepository.deleteAllByEvent(event);
+            eventRepository.delete(event);
         }else{
             throw new PermissionDeniedException("У вас недостаточно прав для удаления этого события.");
         }
