@@ -1,6 +1,7 @@
 package rtuit.lab.Models;
 
 import lombok.*;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -30,4 +31,9 @@ public class Event {
 
     private String location;
 
+    @Column(name = "tag",unique = true)
+    private String tag;
+
+    @Column(name = "user_id",unique = false, nullable = true)
+    private Long user_id;
 }

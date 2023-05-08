@@ -90,7 +90,7 @@ public class UserService implements UserDetailsService {
                 .email(registerRequestDTO.getEmail())
                 .username(registerRequestDTO.getUsername())
                 .password(passwordEncoder.encode(registerRequestDTO.getPassword()))
-                .authorities(Set.of(Role.ROLE_USER))
+                .authorities(Set.of(Role.ROLE_ORGANIZER))
                 .active(false).build()
         );
     }
