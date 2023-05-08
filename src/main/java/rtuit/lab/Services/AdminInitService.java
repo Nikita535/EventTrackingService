@@ -38,6 +38,16 @@ public class AdminInitService implements CommandLineRunner {
                     new HashSet<Role>(Collections.singleton(Role.ROLE_ADMIN)), true);
             userRepository.save(admin);
         }
+        if (userRepository.findByUsername("ORGANIZER").isEmpty()) {
+            User admin = new User("organizer@bk.ru", "ORGANIZER" , password,
+                    new HashSet<Role>(Collections.singleton(Role.ROLE_ORGANIZER)), true);
+            userRepository.save(admin);
+        }
+        if (userRepository.findByUsername("USER").isEmpty()) {
+            User admin = new User("user@bk.ru", "USER" , password,
+                    new HashSet<Role>(Collections.singleton(Role.ROLE_USER)), true);
+            userRepository.save(admin);
+        }
 
     }
 }

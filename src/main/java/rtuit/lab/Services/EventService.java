@@ -9,9 +9,12 @@ import rtuit.lab.Exceptions.ModelsExceptions.EventServiceException.EventNotFound
 import rtuit.lab.Exceptions.ModelsExceptions.EventServiceException.PermissionDeniedException;
 import rtuit.lab.Exceptions.ModelsExceptions.EventServiceException.UnusualException;
 import rtuit.lab.Models.Event;
+import rtuit.lab.Models.Role;
 import rtuit.lab.Models.User;
 import rtuit.lab.Repositories.EventRepository;
+import rtuit.lab.Repositories.UserRepository;
 
+import javax.mail.MessagingException;
 import java.security.Principal;
 import java.security.PrivilegedActionException;
 import java.time.LocalDateTime;
@@ -24,7 +27,12 @@ public class EventService {
     EventRepository eventRepository;
 
     @Autowired
+    UserRepository userRepository;
+    @Autowired
     UserService userService;
+
+    @Autowired
+    EmailService emailService;
     public ResponseEntity<?> getAllEvents() {
         List<Event> allEvents = eventRepository.findAll();
         if (allEvents.isEmpty()) {
@@ -55,6 +63,7 @@ public class EventService {
                 .build();
         try {
             eventRepository.save(event);
+            sendingMessage(event);
             return ResponseEntity.ok().body(event);
         }catch (Exception ex) {
             throw new UnusualException("Что-то пошло не так на стороне сервера. Сообщите о проблеме администрации.");
@@ -70,6 +79,16 @@ public class EventService {
             throw new PermissionDeniedException("У вас недостаточно прав для удаления этого события.");
         }
         return ResponseEntity.ok("Событие удалено");
+    }
+
+    public void sendingMessage(Event event) throws MessagingException {
+        List<User> allUsualUsers = userRepository.findAll().stream()
+                .filter(user -> user.getAuthorities().contains(Role.ROLE_USER)).toList();
+        for(User user : allUsualUsers){
+            String message = "Привет, " + user.getUsername() + "!" +
+                    " Появилось новое событие - " + event.getTitle();
+            emailService.sendSimpleMessage(user.getEmail(), message);
+        }
     }
 
 }
