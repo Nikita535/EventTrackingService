@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import rtuit.lab.Logger.Loggable;
 import rtuit.lab.Models.Role;
 import rtuit.lab.Models.User;
 import rtuit.lab.Repositories.UserRepository;
@@ -35,6 +36,7 @@ public class AdminInitService implements CommandLineRunner, rtuit.lab.Services.A
      * @throws Exception
      */
     @Override
+    @Loggable
     public void run(String... args) throws Exception {
         String password = passwordEncoder.encode("ADMIN");
         if (userRepository.findByUsername("ADMIN").isEmpty()) {

@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import rtuit.lab.Exceptions.ModelsExceptions.EventServiceException.EventNotFoundException;
 import rtuit.lab.Exceptions.ModelsExceptions.EventServiceException.UnusualException;
+import rtuit.lab.Logger.Loggable;
 import rtuit.lab.Models.Event;
 import rtuit.lab.Models.Registration;
 import rtuit.lab.Models.User;
@@ -38,6 +39,7 @@ public class RegistrationService implements rtuit.lab.Services.RegistrationServi
      * @param principal
      * @return
      */
+    @Loggable
     public ResponseEntity<?> registerUserOnEvent(String tag, Principal principal){
         eventRepository.findEventByTag(tag).orElseThrow(() -> new EventNotFoundException("Такого события нет."));
 
@@ -62,7 +64,7 @@ public class RegistrationService implements rtuit.lab.Services.RegistrationServi
      * @param event
      * @throws MessagingException
      */
-
+    @Loggable
     public void sendMessageAboutRegisterOnEvent(User user, Event event) throws MessagingException {
         String message = "Привет, " + user.getUsername() + "!" +
                 " Ты зарегистрировался на событие - " + event.getTitle();

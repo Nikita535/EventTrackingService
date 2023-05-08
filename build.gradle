@@ -41,6 +41,10 @@ dependencies {
 	implementation 'com.google.code.gson:gson:2.7'
 
 	implementation('org.springdoc:springdoc-openapi-ui:1.6.15')
+
+	testImplementation 'ch.qos.logback:logback-classic'
+	implementation 'org.slf4j:slf4j-api'
+	implementation 'org.springframework:spring-aop:5.3.22'
 }
 
 tasks.named('test') {

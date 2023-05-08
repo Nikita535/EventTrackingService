@@ -9,6 +9,7 @@ import rtuit.lab.Exceptions.ModelsExceptions.EventServiceException.EventAlreadyE
 import rtuit.lab.Exceptions.ModelsExceptions.EventServiceException.EventNotFoundException;
 import rtuit.lab.Exceptions.ModelsExceptions.EventServiceException.PermissionDeniedException;
 import rtuit.lab.Exceptions.ModelsExceptions.EventServiceException.UnusualException;
+import rtuit.lab.Logger.Loggable;
 import rtuit.lab.Models.Event;
 import rtuit.lab.Models.Role;
 import rtuit.lab.Models.User;
@@ -42,6 +43,7 @@ public class EventService implements rtuit.lab.Services.EventService {
      *
      * @return
      */
+    @Loggable
     public ResponseEntity<?> getAllEvents() {
         List<Event> allEvents = eventRepository.findAll();
         if (allEvents.isEmpty()) {
@@ -56,6 +58,7 @@ public class EventService implements rtuit.lab.Services.EventService {
      * @param principal
      * @return
      */
+    @Loggable
     public User getUserAuth(Principal principal) {
         return (User) userService.loadUserByUsername(principal.getName());
     }
@@ -66,7 +69,7 @@ public class EventService implements rtuit.lab.Services.EventService {
      * @param principal
      * @return
      */
-
+    @Loggable
     public ResponseEntity<?> addEvent(EventDTO eventDTO,Principal principal) {
         if(eventRepository.findEventByTag(eventDTO.getTag()).isPresent())
         {
@@ -98,6 +101,7 @@ public class EventService implements rtuit.lab.Services.EventService {
      * @return
      */
     @Transactional
+    @Loggable
     public ResponseEntity<?> deleteEvent(EventDTO eventDTO,Principal principal) {
         User userAuth = getUserAuth(principal);
         Long id = eventRepository.findEventByTag(eventDTO.getTag()).orElseThrow().getId();
@@ -116,6 +120,7 @@ public class EventService implements rtuit.lab.Services.EventService {
      * @param event
      * @throws MessagingException
      */
+    @Loggable
     public void sendingMessage(Event event) throws MessagingException {
         List<User> allUsualUsers = userRepository.findAll().stream()
                 .filter(user -> user.getAuthorities().contains(Role.ROLE_USER)).toList();
@@ -132,6 +137,7 @@ public class EventService implements rtuit.lab.Services.EventService {
      * @param principal
      * @return
      */
+    @Loggable
     public ResponseEntity<?> checkEventMembers(String tag, Principal principal){
 
         User userAuth = getUserAuth(principal);

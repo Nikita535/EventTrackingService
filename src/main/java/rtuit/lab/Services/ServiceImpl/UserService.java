@@ -22,6 +22,7 @@ import rtuit.lab.Config.JWT.JWTUtil;
 import rtuit.lab.Controllers.ControllerImpl.AuthControllerImpl;
 import rtuit.lab.DTO.UserDTO;
 import rtuit.lab.DTO.ValidateDTO.RegisterRequestDTO;
+import rtuit.lab.Logger.Loggable;
 import rtuit.lab.Models.ActivationToken;
 import rtuit.lab.Models.Role;
 import rtuit.lab.Models.User;
@@ -62,6 +63,7 @@ public class UserService implements UserDetailsService, rtuit.lab.Services.UserS
      *
      * @param user
      */
+    @Loggable
     public void save(User user) {
         userRepo.save(user);
 //        try {
@@ -76,6 +78,7 @@ public class UserService implements UserDetailsService, rtuit.lab.Services.UserS
      * @param email
      * @return
      */
+    @Loggable
     public boolean existsByUserEmail(String email) {
         return userRepo.findUserByEmail(email).isPresent();
     }
@@ -86,6 +89,7 @@ public class UserService implements UserDetailsService, rtuit.lab.Services.UserS
      * @return
      * @throws UsernameNotFoundException
      */
+    @Loggable
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepo.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("No user with username = " + username));
@@ -95,6 +99,7 @@ public class UserService implements UserDetailsService, rtuit.lab.Services.UserS
      *
      * @param registerRequestDTO
      */
+    @Loggable
     public void registerUser(RegisterRequestDTO registerRequestDTO) {
         save(User.builder()
                 .email(registerRequestDTO.getEmail())
@@ -110,6 +115,7 @@ public class UserService implements UserDetailsService, rtuit.lab.Services.UserS
      * @param userDto
      * @return
      */
+    @Loggable
     public ResponseEntity<?> loginUser(UserDTO userDto) {
         final Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(userDto.getUsername(), userDto.getPassword()));
@@ -128,6 +134,7 @@ public class UserService implements UserDetailsService, rtuit.lab.Services.UserS
      * @param user
      * @return
      */
+    @Loggable
     public ResponseEntity<?> collectUserData(Principal user) {
         User userObj = (User) loadUserByUsername(user.getName());
 
@@ -145,6 +152,7 @@ public class UserService implements UserDetailsService, rtuit.lab.Services.UserS
      *
      * @param code
      */
+    @Loggable
     public void activateUser(String code) {
         User user = activationTokenRepository.findByToken(code).getUser();
         if (user == null) {
@@ -160,6 +168,7 @@ public class UserService implements UserDetailsService, rtuit.lab.Services.UserS
      * @param email
      * @return
      */
+    @Loggable
     public User findUserByEmail(String email) {
         return userRepo.findUserByEmail(email).get();
     }
@@ -169,6 +178,7 @@ public class UserService implements UserDetailsService, rtuit.lab.Services.UserS
      * @param userEmail
      * @throws MessagingException
      */
+    @Loggable
     public void createActivationCode(String userEmail) throws MessagingException {
         User user = findUserByEmail(userEmail);
         String token = UUID.randomUUID().toString();
@@ -188,6 +198,7 @@ public class UserService implements UserDetailsService, rtuit.lab.Services.UserS
      * @param principal
      * @return
      */
+    @Loggable
     public User getUserAuth(Principal principal) {
         return (User) loadUserByUsername(principal.getName());
     }
@@ -199,6 +210,7 @@ public class UserService implements UserDetailsService, rtuit.lab.Services.UserS
      * @param authentication
      * @return
      */
+    @Loggable
     public ResponseEntity<?> userEdit(UserDTO userDTO, Authentication authentication) {
         User user = getUserAuth(authentication);
         try {
@@ -222,6 +234,7 @@ public class UserService implements UserDetailsService, rtuit.lab.Services.UserS
      * @param pageNumber
      * @return
      */
+    @Loggable
     public ResponseEntity<?> getAllUsers(Integer pageNumber){
         Pageable paging = PageRequest.of(pageNumber, 10, Sort.by("id"));
         Page<User> pagedResult = userRepo.findAll(paging);
@@ -238,6 +251,7 @@ public class UserService implements UserDetailsService, rtuit.lab.Services.UserS
      * @param id
      * @return
      */
+    @Loggable
     public ResponseEntity<?> deleteUser(Long id){
         return ResponseEntity.ok(userRepo.deleteUsersById(id));
     }
