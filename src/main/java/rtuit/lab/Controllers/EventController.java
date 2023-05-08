@@ -38,4 +38,9 @@ public class EventController {
         return eventService.deleteEvent(eventDTO,principal);
     }
 
+    @PostMapping("/checkEventMembers")
+    @PreAuthorize("hasAuthority('ROLE_ORGANIZER')")
+    public ResponseEntity<?> checkEventMembers(@RequestParam String tag,Principal principal){
+        return eventService.checkEventMembers(tag,principal);
+    }
 }

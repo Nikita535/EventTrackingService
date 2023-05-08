@@ -9,9 +9,11 @@ import rtuit.lab.Exceptions.ModelsExceptions.EventServiceException.EventNotFound
 import rtuit.lab.Exceptions.ModelsExceptions.EventServiceException.PermissionDeniedException;
 import rtuit.lab.Exceptions.ModelsExceptions.EventServiceException.UnusualException;
 import rtuit.lab.Models.Event;
+import rtuit.lab.Models.Registration;
 import rtuit.lab.Models.Role;
 import rtuit.lab.Models.User;
 import rtuit.lab.Repositories.EventRepository;
+import rtuit.lab.Repositories.RegistrationRepository;
 import rtuit.lab.Repositories.UserRepository;
 
 import javax.mail.MessagingException;
@@ -30,6 +32,9 @@ public class EventService {
     UserRepository userRepository;
     @Autowired
     UserService userService;
+
+    @Autowired
+    RegistrationRepository registrationRepository;
 
     @Autowired
     EmailService emailService;
@@ -63,7 +68,7 @@ public class EventService {
                 .build();
         try {
             eventRepository.save(event);
-            sendingMessage(event);
+//            sendingMessage(event);
             return ResponseEntity.ok().body(event);
         }catch (Exception ex) {
             throw new UnusualException("Что-то пошло не так на стороне сервера. Сообщите о проблеме администрации.");
@@ -91,4 +96,14 @@ public class EventService {
         }
     }
 
+    public ResponseEntity<?> checkEventMembers(String tag, Principal principal){
+
+        User userAuth = getUserAuth(principal);
+        Long id = eventRepository.findEventByTag(tag).orElseThrow().getId();
+        if (userAuth.getId().equals(id)){
+            return ResponseEntity.ok(registrationRepository.findAllByEvent_Tag(tag));
+        }else{
+            throw new PermissionDeniedException("У вас недостаточно прав чтобы посмотреть список участников данного события");
+        }
+    }
 }
