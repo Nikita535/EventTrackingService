@@ -1,5 +1,7 @@
 package rtuit.lab.DTO.ValidateDTO;
 
+import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
@@ -8,9 +10,9 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-@Getter
-@Setter
-@Component
+@Data
+//@Component
+@Builder
 public class RegisterRequestDTO {
 
     @NotNull(message = "Имя должно быть введено.")
