@@ -1,21 +1,17 @@
-package rtuit.lab.TestControllers;
+package rtuit.lab.Controllers.ControllerImpl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.*;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import rtuit.lab.DTO.UserDTO;
 import rtuit.lab.DTO.ValidateDTO.RegisterRequestDTO;
-import rtuit.lab.Repositories.UserRepository;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import rtuit.lab.Services.ServiceImpl.UserService;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
