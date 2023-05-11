@@ -1,6 +1,10 @@
 package rtuit.lab.Services.ServiceImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,12 +48,13 @@ public class EventService implements rtuit.lab.Services.EventService {
      * @return
      */
     @Loggable
-    public ResponseEntity<?> getAllEvents() {
-        List<Event> allEvents = eventRepository.findAll();
-        if (allEvents.isEmpty()) {
+    public ResponseEntity<?> getAllEvents(Integer pageNumber) {
+        Pageable paging = PageRequest.of(pageNumber, 10, Sort.by("id"));
+        Page<Event> pagedResultEvents = eventRepository.findAll(paging);
+        if (!pagedResultEvents.hasContent()) {
             throw new EventNotFoundException("событий не найдено");
         } else {
-            return ResponseEntity.ok(allEvents);
+            return ResponseEntity.ok(pagedResultEvents);
         }
     }
 
@@ -138,12 +143,13 @@ public class EventService implements rtuit.lab.Services.EventService {
      * @return
      */
     @Loggable
-    public ResponseEntity<?> checkEventMembers(String tag, Principal principal){
+    public ResponseEntity<?> checkEventMembers(String tag, Principal principal,Integer pageNumber){
 
         User userAuth = getUserAuth(principal);
         Long id = eventRepository.findEventByTag(tag).orElseThrow().getId();
+        Pageable paging = PageRequest.of(pageNumber, 10, Sort.by("id"));
         if (userAuth.getId().equals(id)){
-            return ResponseEntity.ok(registrationRepository.findAllByEvent_Tag(tag));
+            return ResponseEntity.ok(registrationRepository.findAllByEvent_Tag(tag,paging));
         }else{
             throw new PermissionDeniedException("У вас недостаточно прав чтобы посмотреть список участников данного события");
         }

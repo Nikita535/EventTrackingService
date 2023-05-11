@@ -28,6 +28,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -69,48 +71,86 @@ class EventServiceTest {
     private UserService userService;
 
     /**
-     * Method under test: {@link EventService#getAllEvents()}
+     * Method under test: {@link EventService#getAllEvents(Integer)}
      */
     @Test
     void testGetAllEvents() {
-        when(eventRepository.findAll()).thenReturn(new ArrayList<>());
-        assertThrows(EventNotFoundException.class, () -> eventService.getAllEvents());
-        verify(eventRepository).findAll();
+        when(eventRepository.findAll((Pageable) any())).thenReturn(new PageImpl<>(new ArrayList<>()));
+        assertThrows(EventNotFoundException.class, () -> eventService.getAllEvents(10));
+        verify(eventRepository).findAll((Pageable) any());
     }
 
     /**
-     * Method under test: {@link EventService#getAllEvents()}
+     * Method under test: {@link EventService#getAllEvents(Integer)}
      */
     @Test
     void testGetAllEvents2() {
         Event event = new Event();
         event.setDescription("The characteristics of someone or something");
-        event.setEndDate(LocalDateTime.of(1, 1, 1, 1, 1));
+        event.setEndDate(LocalDateTime.of(10, 10, 10, 10, 1));
         event.setId(123L);
-        event.setLocation("событий не найдено");
-        event.setStartDate(LocalDateTime.of(1, 1, 1, 1, 1));
-        event.setTag("событий не найдено");
+        event.setLocation("id");
+        event.setStartDate(LocalDateTime.of(10, 10, 10, 10, 1));
+        event.setTag("id");
         event.setTitle("Dr");
-        event.setUser_id(1L);
+        event.setUser_id(10L);
 
         ArrayList<Event> eventList = new ArrayList<>();
         eventList.add(event);
-        when(eventRepository.findAll()).thenReturn(eventList);
-        ResponseEntity<?> actualAllEvents = eventService.getAllEvents();
+        PageImpl<Event> pageImpl = new PageImpl<>(eventList);
+        when(eventRepository.findAll((Pageable) any())).thenReturn(pageImpl);
+        ResponseEntity<?> actualAllEvents = eventService.getAllEvents(10);
         assertTrue(actualAllEvents.hasBody());
+        assertEquals(1, ((PageImpl) actualAllEvents.getBody()).toList().size());
         assertEquals(HttpStatus.OK, actualAllEvents.getStatusCode());
         assertTrue(actualAllEvents.getHeaders().isEmpty());
-        verify(eventRepository).findAll();
+        verify(eventRepository).findAll((Pageable) any());
     }
 
     /**
-     * Method under test: {@link EventService#getAllEvents()}
+     * Method under test: {@link EventService#getAllEvents(Integer)}
      */
     @Test
+    @Disabled("TODO: Complete this test")
     void testGetAllEvents3() {
-        when(eventRepository.findAll()).thenThrow(new EventNotFoundException("An error occurred"));
-        assertThrows(EventNotFoundException.class, () -> eventService.getAllEvents());
-        verify(eventRepository).findAll();
+        // TODO: Complete this test.
+        //   Reason: R013 No inputs found that don't throw a trivial exception.
+        //   Diffblue Cover tried to run the arrange/act section, but the method under
+        //   test threw
+        //   java.lang.NullPointerException: Cannot invoke "org.springframework.data.domain.Page.hasContent()" because "pagedResultEvents" is null
+        //       at rtuit.lab.Services.ServiceImpl.EventService.getAllEvents(EventService.java:54)
+        //   See https://diff.blue/R013 to resolve this issue.
+
+        when(eventRepository.findAll((Pageable) any())).thenReturn(null);
+        eventService.getAllEvents(10);
+    }
+
+    /**
+     * Method under test: {@link EventService#getAllEvents(Integer)}
+     */
+    @Test
+    @Disabled("TODO: Complete this test")
+    void testGetAllEvents4() {
+        // TODO: Complete this test.
+        //   Reason: R013 No inputs found that don't throw a trivial exception.
+        //   Diffblue Cover tried to run the arrange/act section, but the method under
+        //   test threw
+        //   java.lang.IllegalArgumentException: Page index must not be less than zero
+        //       at rtuit.lab.Services.ServiceImpl.EventService.getAllEvents(EventService.java:52)
+        //   See https://diff.blue/R013 to resolve this issue.
+
+        when(eventRepository.findAll((Pageable) any())).thenReturn(new PageImpl<>(new ArrayList<>()));
+        eventService.getAllEvents(-1);
+    }
+
+    /**
+     * Method under test: {@link EventService#getAllEvents(Integer)}
+     */
+    @Test
+    void testGetAllEvents5() {
+        when(eventRepository.findAll((Pageable) any())).thenThrow(new EventNotFoundException("An error occurred"));
+        assertThrows(EventNotFoundException.class, () -> eventService.getAllEvents(10));
+        verify(eventRepository).findAll((Pageable) any());
     }
 
     /**
@@ -130,6 +170,14 @@ class EventServiceTest {
     @Test
     @Disabled("TODO: Complete this test")
     void testGetUserAuth2() throws UsernameNotFoundException {
+        // TODO: Complete this test.
+        //   Reason: R013 No inputs found that don't throw a trivial exception.
+        //   Diffblue Cover tried to run the arrange/act section, but the method under
+        //   test threw
+        //   java.lang.NullPointerException: Cannot invoke "java.security.Principal.getName()" because "principal" is null
+        //       at rtuit.lab.Services.ServiceImpl.EventService.getUserAuth(EventService.java:68)
+        //   See https://diff.blue/R013 to resolve this issue.
+
         when(userService.loadUserByUsername((String) any())).thenReturn(new User());
         eventService.getUserAuth(null);
     }
@@ -217,6 +265,14 @@ class EventServiceTest {
     @Test
     @Disabled("TODO: Complete this test")
     void testAddEvent4() throws UsernameNotFoundException {
+        // TODO: Complete this test.
+        //   Reason: R013 No inputs found that don't throw a trivial exception.
+        //   Diffblue Cover tried to run the arrange/act section, but the method under
+        //   test threw
+        //   java.lang.NullPointerException: Cannot invoke "rtuit.lab.Models.User.getId()" because the return value of "rtuit.lab.Services.ServiceImpl.EventService.getUserAuth(java.security.Principal)" is null
+        //       at rtuit.lab.Services.ServiceImpl.EventService.addEvent(EventService.java:91)
+        //   See https://diff.blue/R013 to resolve this issue.
+
         Event event = new Event();
         event.setDescription("The characteristics of someone or something");
         event.setEndDate(LocalDateTime.of(1, 1, 1, 1, 1));
@@ -273,6 +329,13 @@ class EventServiceTest {
     @Test
     @Disabled("TODO: Complete this test")
     void testDeleteEvent() throws UsernameNotFoundException {
+        // TODO: Complete this test.
+        //   Reason: R013 No inputs found that don't throw a trivial exception.
+        //   Diffblue Cover tried to run the arrange/act section, but the method under
+        //   test threw
+        //   java.lang.NullPointerException: Cannot invoke "java.lang.Long.equals(Object)" because the return value of "rtuit.lab.Models.User.getId()" is null
+        //       at rtuit.lab.Services.ServiceImpl.EventService.deleteEvent(EventService.java:113)
+        //   See https://diff.blue/R013 to resolve this issue.
 
         Event event = new Event();
         event.setDescription("The characteristics of someone or something");
@@ -317,6 +380,13 @@ class EventServiceTest {
     @Test
     @Disabled("TODO: Complete this test")
     void testDeleteEvent3() throws UsernameNotFoundException {
+        // TODO: Complete this test.
+        //   Reason: R013 No inputs found that don't throw a trivial exception.
+        //   Diffblue Cover tried to run the arrange/act section, but the method under
+        //   test threw
+        //   java.lang.NullPointerException: Cannot invoke "java.lang.Long.equals(Object)" because the return value of "rtuit.lab.Models.User.getId()" is null
+        //       at rtuit.lab.Services.ServiceImpl.EventService.deleteEvent(EventService.java:113)
+        //   See https://diff.blue/R013 to resolve this issue.
 
         Event event = mock(Event.class);
         when(event.getId()).thenReturn(123L);
@@ -348,6 +418,15 @@ class EventServiceTest {
     @Test
     @Disabled("TODO: Complete this test")
     void testDeleteEvent4() throws UsernameNotFoundException {
+        // TODO: Complete this test.
+        //   Reason: R013 No inputs found that don't throw a trivial exception.
+        //   Diffblue Cover tried to run the arrange/act section, but the method under
+        //   test threw
+        //   java.util.NoSuchElementException: No value present
+        //       at java.util.Optional.orElseThrow(Optional.java:377)
+        //       at rtuit.lab.Services.ServiceImpl.EventService.deleteEvent(EventService.java:112)
+        //   See https://diff.blue/R013 to resolve this issue.
+
         when(eventRepository.findEventByTag((String) any())).thenReturn(Optional.empty());
         Event event = mock(Event.class);
         when(event.getId()).thenReturn(123L);
@@ -377,6 +456,14 @@ class EventServiceTest {
     @Test
     @Disabled("TODO: Complete this test")
     void testDeleteEvent5() throws UsernameNotFoundException {
+        // TODO: Complete this test.
+        //   Reason: R013 No inputs found that don't throw a trivial exception.
+        //   Diffblue Cover tried to run the arrange/act section, but the method under
+        //   test threw
+        //   java.lang.NullPointerException: Cannot invoke "rtuit.lab.Models.User.getId()" because "userAuth" is null
+        //       at rtuit.lab.Services.ServiceImpl.EventService.deleteEvent(EventService.java:113)
+        //   See https://diff.blue/R013 to resolve this issue.
+
         Event event = mock(Event.class);
         when(event.getId()).thenReturn(123L);
         doNothing().when(event).setDescription((String) any());
@@ -723,11 +810,18 @@ class EventServiceTest {
     }
 
     /**
-     * Method under test: {@link EventService#checkEventMembers(String, Principal)}
+     * Method under test: {@link EventService#checkEventMembers(String, Principal, Integer)}
      */
     @Test
     @Disabled("TODO: Complete this test")
     void testCheckEventMembers() throws UsernameNotFoundException {
+        // TODO: Complete this test.
+        //   Reason: R013 No inputs found that don't throw a trivial exception.
+        //   Diffblue Cover tried to run the arrange/act section, but the method under
+        //   test threw
+        //   java.lang.NullPointerException: Cannot invoke "java.lang.Long.equals(Object)" because the return value of "rtuit.lab.Models.User.getId()" is null
+        //       at rtuit.lab.Services.ServiceImpl.EventService.checkEventMembers(EventService.java:151)
+        //   See https://diff.blue/R013 to resolve this issue.
 
         Event event = new Event();
         event.setDescription("The characteristics of someone or something");
@@ -741,11 +835,11 @@ class EventServiceTest {
         Optional<Event> ofResult = Optional.of(event);
         when(eventRepository.findEventByTag((String) any())).thenReturn(ofResult);
         when(userService.loadUserByUsername((String) any())).thenReturn(new User());
-        eventService.checkEventMembers("Tag", new UserPrincipal("principal"));
+        eventService.checkEventMembers("Tag", new UserPrincipal("principal"), 10);
     }
 
     /**
-     * Method under test: {@link EventService#checkEventMembers(String, Principal)}
+     * Method under test: {@link EventService#checkEventMembers(String, Principal, Integer)}
      */
     @Test
     void testCheckEventMembers2() throws UsernameNotFoundException {
@@ -762,16 +856,24 @@ class EventServiceTest {
         when(eventRepository.findEventByTag((String) any())).thenReturn(ofResult);
         when(userService.loadUserByUsername((String) any())).thenThrow(new EventNotFoundException("An error occurred"));
         assertThrows(EventNotFoundException.class,
-                () -> eventService.checkEventMembers("Tag", new UserPrincipal("principal")));
+                () -> eventService.checkEventMembers("Tag", new UserPrincipal("principal"), 10));
         verify(userService).loadUserByUsername((String) any());
     }
 
     /**
-     * Method under test: {@link EventService#checkEventMembers(String, Principal)}
+     * Method under test: {@link EventService#checkEventMembers(String, Principal, Integer)}
      */
     @Test
     @Disabled("TODO: Complete this test")
     void testCheckEventMembers3() throws UsernameNotFoundException {
+        // TODO: Complete this test.
+        //   Reason: R013 No inputs found that don't throw a trivial exception.
+        //   Diffblue Cover tried to run the arrange/act section, but the method under
+        //   test threw
+        //   java.lang.NullPointerException: Cannot invoke "java.lang.Long.equals(Object)" because the return value of "rtuit.lab.Models.User.getId()" is null
+        //       at rtuit.lab.Services.ServiceImpl.EventService.checkEventMembers(EventService.java:151)
+        //   See https://diff.blue/R013 to resolve this issue.
+
         Event event = mock(Event.class);
         when(event.getId()).thenReturn(123L);
         doNothing().when(event).setDescription((String) any());
@@ -793,15 +895,23 @@ class EventServiceTest {
         Optional<Event> ofResult = Optional.of(event);
         when(eventRepository.findEventByTag((String) any())).thenReturn(ofResult);
         when(userService.loadUserByUsername((String) any())).thenReturn(new User());
-        eventService.checkEventMembers("Tag", new UserPrincipal("principal"));
+        eventService.checkEventMembers("Tag", new UserPrincipal("principal"), 10);
     }
 
     /**
-     * Method under test: {@link EventService#checkEventMembers(String, Principal)}
+     * Method under test: {@link EventService#checkEventMembers(String, Principal, Integer)}
      */
     @Test
     @Disabled("TODO: Complete this test")
     void testCheckEventMembers4() throws UsernameNotFoundException {
+        // TODO: Complete this test.
+        //   Reason: R013 No inputs found that don't throw a trivial exception.
+        //   Diffblue Cover tried to run the arrange/act section, but the method under
+        //   test threw
+        //   java.util.NoSuchElementException: No value present
+        //       at java.util.Optional.orElseThrow(Optional.java:377)
+        //       at rtuit.lab.Services.ServiceImpl.EventService.checkEventMembers(EventService.java:149)
+        //   See https://diff.blue/R013 to resolve this issue.
 
         when(eventRepository.findEventByTag((String) any())).thenReturn(Optional.empty());
         Event event = mock(Event.class);
@@ -823,15 +933,22 @@ class EventServiceTest {
         event.setTitle("Dr");
         event.setUser_id(1L);
         when(userService.loadUserByUsername((String) any())).thenReturn(new User());
-        eventService.checkEventMembers("Tag", new UserPrincipal("principal"));
+        eventService.checkEventMembers("Tag", new UserPrincipal("principal"), 10);
     }
 
     /**
-     * Method under test: {@link EventService#checkEventMembers(String, Principal)}
+     * Method under test: {@link EventService#checkEventMembers(String, Principal, Integer)}
      */
     @Test
     @Disabled("TODO: Complete this test")
     void testCheckEventMembers5() throws UsernameNotFoundException {
+        // TODO: Complete this test.
+        //   Reason: R013 No inputs found that don't throw a trivial exception.
+        //   Diffblue Cover tried to run the arrange/act section, but the method under
+        //   test threw
+        //   java.lang.NullPointerException: Cannot invoke "rtuit.lab.Models.User.getId()" because "userAuth" is null
+        //       at rtuit.lab.Services.ServiceImpl.EventService.checkEventMembers(EventService.java:151)
+        //   See https://diff.blue/R013 to resolve this issue.
 
         Event event = mock(Event.class);
         when(event.getId()).thenReturn(123L);
@@ -854,11 +971,11 @@ class EventServiceTest {
         Optional<Event> ofResult = Optional.of(event);
         when(eventRepository.findEventByTag((String) any())).thenReturn(ofResult);
         when(userService.loadUserByUsername((String) any())).thenReturn(null);
-        eventService.checkEventMembers("Tag", new UserPrincipal("principal"));
+        eventService.checkEventMembers("Tag", new UserPrincipal("principal"), 10);
     }
 
     /**
-     * Method under test: {@link EventService#checkEventMembers(String, Principal)}
+     * Method under test: {@link EventService#checkEventMembers(String, Principal, Integer)}
      */
     @Test
     void testCheckEventMembers6() throws UsernameNotFoundException {
@@ -882,12 +999,14 @@ class EventServiceTest {
         event.setUser_id(1L);
         Optional<Event> ofResult = Optional.of(event);
         when(eventRepository.findEventByTag((String) any())).thenReturn(ofResult);
-        when(registrationRepository.findAllByEvent_Tag((String) any())).thenReturn(new ArrayList<>());
+        when(registrationRepository.findAllByEvent_Tag((String) any(), (Pageable) any()))
+                .thenReturn(new PageImpl<>(new ArrayList<>()));
         when(userService.loadUserByUsername((String) any()))
                 .thenReturn(new User(123L, "janedoe", "iloveyou", "jane.doe@example.org", true, new HashSet<>()));
         ResponseEntity<?> actualCheckEventMembersResult = eventService.checkEventMembers("Tag",
-                new UserPrincipal("principal"));
+                new UserPrincipal("principal"), 10);
         assertTrue(actualCheckEventMembersResult.hasBody());
+        assertTrue(((PageImpl) actualCheckEventMembersResult.getBody()).toList().isEmpty());
         assertEquals(HttpStatus.OK, actualCheckEventMembersResult.getStatusCode());
         assertTrue(actualCheckEventMembersResult.getHeaders().isEmpty());
         verify(eventRepository).findEventByTag((String) any());
@@ -900,12 +1019,12 @@ class EventServiceTest {
         verify(event).setTag((String) any());
         verify(event).setTitle((String) any());
         verify(event).setUser_id((Long) any());
-        verify(registrationRepository).findAllByEvent_Tag((String) any());
+        verify(registrationRepository).findAllByEvent_Tag((String) any(), (Pageable) any());
         verify(userService).loadUserByUsername((String) any());
     }
 
     /**
-     * Method under test: {@link EventService#checkEventMembers(String, Principal)}
+     * Method under test: {@link EventService#checkEventMembers(String, Principal, Integer)}
      */
     @Test
     void testCheckEventMembers7() throws UsernameNotFoundException {
@@ -929,11 +1048,12 @@ class EventServiceTest {
         event.setUser_id(1L);
         Optional<Event> ofResult = Optional.of(event);
         when(eventRepository.findEventByTag((String) any())).thenReturn(ofResult);
-        when(registrationRepository.findAllByEvent_Tag((String) any())).thenReturn(new ArrayList<>());
+        when(registrationRepository.findAllByEvent_Tag((String) any(), (Pageable) any()))
+                .thenReturn(new PageImpl<>(new ArrayList<>()));
         when(userService.loadUserByUsername((String) any()))
                 .thenReturn(new User(123L, "janedoe", "iloveyou", "jane.doe@example.org", true, new HashSet<>()));
         assertThrows(PermissionDeniedException.class,
-                () -> eventService.checkEventMembers("Tag", new UserPrincipal("principal")));
+                () -> eventService.checkEventMembers("Tag", new UserPrincipal("principal"), 10));
         verify(eventRepository).findEventByTag((String) any());
         verify(event).getId();
         verify(event).setDescription((String) any());
@@ -948,7 +1068,7 @@ class EventServiceTest {
     }
 
     /**
-     * Method under test: {@link EventService#checkEventMembers(String, Principal)}
+     * Method under test: {@link EventService#checkEventMembers(String, Principal, Integer)}
      */
     @Test
     void testCheckEventMembers8() throws UsernameNotFoundException {
@@ -972,13 +1092,15 @@ class EventServiceTest {
         event.setUser_id(1L);
         Optional<Event> ofResult = Optional.of(event);
         when(eventRepository.findEventByTag((String) any())).thenReturn(ofResult);
-        when(registrationRepository.findAllByEvent_Tag((String) any())).thenReturn(new ArrayList<>());
+        when(registrationRepository.findAllByEvent_Tag((String) any(), (Pageable) any()))
+                .thenReturn(new PageImpl<>(new ArrayList<>()));
         User user = mock(User.class);
         when(user.getId()).thenReturn(123L);
         when(userService.loadUserByUsername((String) any())).thenReturn(user);
         ResponseEntity<?> actualCheckEventMembersResult = eventService.checkEventMembers("Tag",
-                new UserPrincipal("principal"));
+                new UserPrincipal("principal"), 10);
         assertTrue(actualCheckEventMembersResult.hasBody());
+        assertTrue(((PageImpl) actualCheckEventMembersResult.getBody()).toList().isEmpty());
         assertEquals(HttpStatus.OK, actualCheckEventMembersResult.getStatusCode());
         assertTrue(actualCheckEventMembersResult.getHeaders().isEmpty());
         verify(eventRepository).findEventByTag((String) any());
@@ -991,7 +1113,7 @@ class EventServiceTest {
         verify(event).setTag((String) any());
         verify(event).setTitle((String) any());
         verify(event).setUser_id((Long) any());
-        verify(registrationRepository).findAllByEvent_Tag((String) any());
+        verify(registrationRepository).findAllByEvent_Tag((String) any(), (Pageable) any());
         verify(userService).loadUserByUsername((String) any());
         verify(user).getId();
     }

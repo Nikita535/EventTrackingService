@@ -47,6 +47,13 @@ public class UserControllerImpl implements UserController {
         return userService.deleteUser(id);
     }
 
+
+    @PostMapping("/getAllUsers")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<?> allUsers(Integer pageNumber){
+        return userService.getAllUsers(pageNumber);
+    }
+
     /**
      *
      * @param tag

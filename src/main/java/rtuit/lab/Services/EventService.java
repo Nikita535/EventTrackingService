@@ -9,11 +9,11 @@ import javax.mail.MessagingException;
 import java.security.Principal;
 
 public interface EventService {
-    ResponseEntity<?> getAllEvents();
+    ResponseEntity<?> getAllEvents(Integer pageNumber);
     User getUserAuth(Principal principal);
     ResponseEntity<?> addEvent(EventDTO eventDTO, Principal principal);
     ResponseEntity<?> deleteEvent(EventDTO eventDTO,Principal principal);
     void sendingMessage(Event event) throws MessagingException;
-    ResponseEntity<?> checkEventMembers(String tag, Principal principal);
+    ResponseEntity<?> checkEventMembers(String tag, Principal principal,Integer pageNumber);
 
 }

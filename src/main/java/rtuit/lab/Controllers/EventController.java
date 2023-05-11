@@ -26,7 +26,7 @@ public interface EventController {
                     @ApiResponse(responseCode = "403")
             }
     )
-    ResponseEntity<?> getAllEvents();
+    ResponseEntity<?> getAllEvents(@RequestParam(defaultValue = "0") Integer pageNumber);
     @Operation(
             tags = "Добавить событие",
             summary = "Событие добавлено",
@@ -65,5 +65,5 @@ public interface EventController {
                     @ApiResponse(responseCode = "403")
             }
     )
-    ResponseEntity<?> checkEventMembers(@RequestParam String tag, Principal principal);
+    ResponseEntity<?> checkEventMembers(@RequestParam String tag, Principal principal,Integer pageNumber);
 }

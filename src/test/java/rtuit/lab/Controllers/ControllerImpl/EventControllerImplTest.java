@@ -37,11 +37,11 @@ class EventControllerImplTest {
     private EventService eventService;
 
     /**
-     * Method under test: {@link EventControllerImpl#getAllEvents()}
+     * Method under test: {@link EventControllerImpl#getAllEvents(Integer pageNumber)}
      */
     @Test
     void testGetAllEvents() throws Exception {
-        when((ResponseEntity<Object>) eventService.getAllEvents()).thenReturn(new ResponseEntity<>(HttpStatus.CONTINUE));
+        when((ResponseEntity<Object>) eventService.getAllEvents(10)).thenReturn(new ResponseEntity<>(HttpStatus.CONTINUE));
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/api/event/getAll");
         ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(eventControllerImpl)
                 .build()
@@ -96,11 +96,11 @@ class EventControllerImplTest {
     }
 
     /**
-     * Method under test: {@link EventControllerImpl#checkEventMembers(String, Principal)}
+     * Method under test: {@link EventControllerImpl#checkEventMembers(String, Principal,Integer)}
      */
     @Test
     void testCheckEventMembers() throws Exception {
-        when((ResponseEntity<Object>) eventService.checkEventMembers((String) any(), (Principal) any()))
+        when((ResponseEntity<Object>) eventService.checkEventMembers((String) any(), (Principal) any(),10))
                 .thenReturn(new ResponseEntity<>(HttpStatus.CONTINUE));
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post("/api/event/checkEventMembers")
                 .param("tag", "foo");

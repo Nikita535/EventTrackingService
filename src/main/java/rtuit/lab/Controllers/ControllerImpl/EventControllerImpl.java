@@ -24,8 +24,8 @@ public class EventControllerImpl implements EventController {
      * @return
      */
     @GetMapping("/getAll")
-    public ResponseEntity<?> getAllEvents(){
-        return eventService.getAllEvents();
+    public ResponseEntity<?> getAllEvents(@RequestParam(defaultValue = "0") Integer pageNumber){
+        return eventService.getAllEvents(pageNumber);
     }
 
     /**
@@ -60,7 +60,7 @@ public class EventControllerImpl implements EventController {
      */
     @PostMapping("/checkEventMembers")
     @PreAuthorize("hasAuthority('ROLE_ORGANIZER')")
-    public ResponseEntity<?> checkEventMembers(@RequestParam String tag,Principal principal){
-        return eventService.checkEventMembers(tag,principal);
+    public ResponseEntity<?> checkEventMembers(@RequestParam String tag,Principal principal,@RequestParam Integer pageNumber){
+        return eventService.checkEventMembers(tag,principal,pageNumber);
     }
 }
