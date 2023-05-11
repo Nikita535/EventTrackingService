@@ -516,7 +516,7 @@ class EventServiceTest {
         when(eventRepository.findEventByTag((String) any())).thenReturn(ofResult);
         doNothing().when(registrationRepository).deleteAllByEvent((Event) any());
         when(userService.loadUserByUsername((String) any()))
-                .thenReturn(new User(123L, "janedoe", "iloveyou", "jane.doe@example.org", true, new HashSet<>()));
+                .thenReturn(new User(123L, "janedoe", "iloveyou", "jane.doe@example.org", true, new HashSet<>(),null));
         ResponseEntity<?> actualDeleteEventResult = eventService.deleteEvent(eventDTO, new UserPrincipal("principal"));
         assertEquals("Событие удалено", actualDeleteEventResult.getBody());
         assertEquals(HttpStatus.OK, actualDeleteEventResult.getStatusCode());
@@ -565,7 +565,7 @@ class EventServiceTest {
         doThrow(new EventNotFoundException("An error occurred")).when(registrationRepository)
                 .deleteAllByEvent((Event) any());
         when(userService.loadUserByUsername((String) any()))
-                .thenReturn(new User(123L, "janedoe", "iloveyou", "jane.doe@example.org", true, new HashSet<>()));
+                .thenReturn(new User(123L, "janedoe", "iloveyou", "jane.doe@example.org", true, new HashSet<>(),null));
         assertThrows(EventNotFoundException.class,
                 () -> eventService.deleteEvent(eventDTO, new UserPrincipal("principal")));
         verify(eventRepository, atLeast(1)).findEventByTag((String) any());
@@ -610,7 +610,7 @@ class EventServiceTest {
         when(eventRepository.findEventByTag((String) any())).thenReturn(ofResult);
         doNothing().when(registrationRepository).deleteAllByEvent((Event) any());
         when(userService.loadUserByUsername((String) any()))
-                .thenReturn(new User(123L, "janedoe", "iloveyou", "jane.doe@example.org", true, new HashSet<>()));
+                .thenReturn(new User(123L, "janedoe", "iloveyou", "jane.doe@example.org", true, new HashSet<>(),null));
         assertThrows(PermissionDeniedException.class,
                 () -> eventService.deleteEvent(eventDTO, new UserPrincipal("principal")));
         verify(eventRepository).findEventByTag((String) any());
@@ -1002,7 +1002,7 @@ class EventServiceTest {
         when(registrationRepository.findAllByEvent_Tag((String) any(), (Pageable) any()))
                 .thenReturn(new PageImpl<>(new ArrayList<>()));
         when(userService.loadUserByUsername((String) any()))
-                .thenReturn(new User(123L, "janedoe", "iloveyou", "jane.doe@example.org", true, new HashSet<>()));
+                .thenReturn(new User(123L, "janedoe", "iloveyou", "jane.doe@example.org", true, new HashSet<>(),null));
         ResponseEntity<?> actualCheckEventMembersResult = eventService.checkEventMembers("Tag",
                 new UserPrincipal("principal"), 10);
         assertTrue(actualCheckEventMembersResult.hasBody());
@@ -1051,7 +1051,7 @@ class EventServiceTest {
         when(registrationRepository.findAllByEvent_Tag((String) any(), (Pageable) any()))
                 .thenReturn(new PageImpl<>(new ArrayList<>()));
         when(userService.loadUserByUsername((String) any()))
-                .thenReturn(new User(123L, "janedoe", "iloveyou", "jane.doe@example.org", true, new HashSet<>()));
+                .thenReturn(new User(123L, "janedoe", "iloveyou", "jane.doe@example.org", true, new HashSet<>(),null));
         assertThrows(PermissionDeniedException.class,
                 () -> eventService.checkEventMembers("Tag", new UserPrincipal("principal"), 10));
         verify(eventRepository).findEventByTag((String) any());

@@ -37,12 +37,14 @@ class EventControllerImplTest {
     private EventService eventService;
 
     /**
-     * Method under test: {@link EventControllerImpl#getAllEvents(Integer pageNumber)}
+     * Method under test: {@link EventControllerImpl#getAllEvents(Integer)}
      */
     @Test
     void testGetAllEvents() throws Exception {
-        when((ResponseEntity<Object>) eventService.getAllEvents(10)).thenReturn(new ResponseEntity<>(HttpStatus.CONTINUE));
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/api/event/getAll");
+        when((ResponseEntity<Object>) eventService.getAllEvents((Integer) any()))
+                .thenReturn(new ResponseEntity<>(HttpStatus.CONTINUE));
+        MockHttpServletRequestBuilder getResult = MockMvcRequestBuilders.get("/api/event/getAll");
+        MockHttpServletRequestBuilder requestBuilder = getResult.param("pageNumber", String.valueOf(1));
         ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(eventControllerImpl)
                 .build()
                 .perform(requestBuilder);
@@ -96,13 +98,14 @@ class EventControllerImplTest {
     }
 
     /**
-     * Method under test: {@link EventControllerImpl#checkEventMembers(String, Principal,Integer)}
+     * Method under test: {@link EventControllerImpl#checkEventMembers(String, Principal, Integer)}
      */
     @Test
     void testCheckEventMembers() throws Exception {
-        when((ResponseEntity<Object>) eventService.checkEventMembers((String) any(), (Principal) any(),10))
+        when((ResponseEntity<Object>) eventService.checkEventMembers((String) any(), (Principal) any(), (Integer) any()))
                 .thenReturn(new ResponseEntity<>(HttpStatus.CONTINUE));
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post("/api/event/checkEventMembers")
+        MockHttpServletRequestBuilder postResult = MockMvcRequestBuilders.post("/api/event/checkEventMembers");
+        MockHttpServletRequestBuilder requestBuilder = postResult.param("pageNumber", String.valueOf(1))
                 .param("tag", "foo");
         ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(eventControllerImpl)
                 .build()
