@@ -7,6 +7,7 @@ import rtuit.lab.Controllers.AuthController;
 import rtuit.lab.DTO.UserDTO;
 import rtuit.lab.DTO.ValidateDTO.RegisterRequestDTO;
 import rtuit.lab.DTO.ValidateDTO.RegisterResponseDTO;
+import rtuit.lab.Models.Media;
 import rtuit.lab.Services.ServiceImpl.UserService;
 
 import javax.validation.Valid;
@@ -64,5 +65,5 @@ public class AuthControllerImpl implements AuthController {
      * @param username
      * @param authorities
      */
-    public record JwtResponse(String jwt, Long id, String email, String username, List<String> authorities) {}
+    public record JwtResponse(String jwt, Long id, String email, String username, List<String> authorities, Media avatar) {}
 }

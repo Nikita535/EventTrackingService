@@ -60,7 +60,7 @@ public class EventControllerImpl implements EventController {
      */
     @PostMapping("/checkEventMembers")
     @PreAuthorize("hasAuthority('ROLE_ORGANIZER')")
-    public ResponseEntity<?> checkEventMembers(@RequestParam String tag,Principal principal,@RequestParam Integer pageNumber){
+    public ResponseEntity<?> checkEventMembers(@RequestParam String tag,Principal principal,@RequestParam(defaultValue = "0") Integer pageNumber){
         return eventService.checkEventMembers(tag,principal,pageNumber);
     }
 }

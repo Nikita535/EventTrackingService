@@ -47,6 +47,6 @@ dependencies {
 	implementation 'org.springframework:spring-aop:5.3.22'
 }
 
-//tasks.named('test') {
-//	useJUnitPlatform()
-//}
+tasks.named('test') {
+	useJUnitPlatform()
+}

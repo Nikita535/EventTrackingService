@@ -1,10 +1,13 @@
 package rtuit.lab.Services.ServiceImpl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,12 +21,18 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
+import org.springframework.web.multipart.MultipartFile;
 import rtuit.lab.Config.JWT.JWTUtil;
+import rtuit.lab.Controllers.AuthController;
 import rtuit.lab.Controllers.ControllerImpl.AuthControllerImpl;
 import rtuit.lab.DTO.UserDTO;
 import rtuit.lab.DTO.ValidateDTO.RegisterRequestDTO;
 import rtuit.lab.Logger.Loggable;
 import rtuit.lab.Models.ActivationToken;
+import rtuit.lab.Models.Media;
 import rtuit.lab.Models.Role;
 import rtuit.lab.Models.User;
 import rtuit.lab.Repositories.ActivationTokenRepository;
@@ -31,6 +40,7 @@ import rtuit.lab.Repositories.UserRepository;
 
 import javax.mail.MessagingException;
 import javax.validation.Validator;
+import java.io.IOException;
 import java.security.Principal;
 import java.util.Date;
 import java.util.List;
@@ -126,7 +136,7 @@ public class UserService implements UserDetailsService, rtuit.lab.Services.UserS
         String jwt = jwtUtil.generateToken(user.getUsername());
 
         List<String> authorities = user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
-        return ResponseEntity.ok(new AuthControllerImpl.JwtResponse(jwt, user.getId(), user.getEmail(), user.getUsername(), authorities));
+        return ResponseEntity.ok(new AuthControllerImpl.JwtResponse(jwt, user.getId(), user.getEmail(), user.getUsername(), authorities,user.getAvatar()));
     }
 
     /**
@@ -206,28 +216,94 @@ public class UserService implements UserDetailsService, rtuit.lab.Services.UserS
 
     /**
      *
-     * @param userDTO
+     * @param JsonUserDTO
      * @param authentication
      * @return
      */
-    @Loggable
-    public ResponseEntity<?> userEdit(UserDTO userDTO, Authentication authentication) {
+    public ResponseEntity<?> userEdit(String JsonUserDTO, Authentication authentication, MultipartFile multipartFile) throws JsonProcessingException {
         User user = getUserAuth(authentication);
+
+        UserDTO userDTO= new ObjectMapper().readValue(JsonUserDTO,UserDTO.class);
+        SpringValidatorAdapter springValidator = new SpringValidatorAdapter(validator);
+        BindingResult bindingResult = new BeanPropertyBindingResult(userDTO, "UserDtoResult");
+        springValidator.validate(userDTO, bindingResult);
+
+        if (bindingResult.hasErrors()) {
+            return new ResponseEntity<>(bindingResult.getFieldErrors(), HttpStatus.CONFLICT);
+        }
+
         try {
             user.setUsername(userDTO.getUsername());
             user.setEmail(userDTO.getEmail());
             user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+            if (multipartFile != null) {
+                Media media = Media.builder()
+                        .originalFileName(multipartFile.getOriginalFilename())
+                        .mediaType(multipartFile.getContentType())
+                        .size(multipartFile.getSize())
+                        .bytes(multipartFile.getBytes()).build();
+                user.setAvatar(media);
+            }
             save(user);
             authentication = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword());
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String jwt = jwtUtil.generateToken(user.getUsername());
 
             List<String> authorities = user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
-            return ResponseEntity.ok(new AuthControllerImpl.JwtResponse(jwt, user.getId(), user.getEmail(), user.getUsername(), authorities));
+            return ResponseEntity.ok(new AuthControllerImpl.JwtResponse(jwt, user.getId(), user.getEmail(), user.getUsername(), authorities,user.getAvatar()));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body("Пользователь с такой почтой уже существует");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
+//    @Loggable
+//    public ResponseEntity<?> userEdit(String JsonUserDTO, Authentication authentication, MultipartFile multipartFile)  {
+//        User user = getUserAuth(authentication);
+//
+//        UserDTO userDTO= null;
+//        try {
+//            userDTO = new ObjectMapper().readValue(JsonUserDTO, UserDTO.class);
+//        } catch (JsonProcessingException e) {
+//            throw new RuntimeException(e);
+//        }
+//        SpringValidatorAdapter springValidator = new SpringValidatorAdapter(validator);
+//        BindingResult bindingResult = new BeanPropertyBindingResult(userDTO, "UserDtoResult");
+//        springValidator.validate(userDTO, bindingResult);
+//
+//        if (bindingResult.hasErrors()) {
+//            return new ResponseEntity<>(bindingResult.getFieldErrors(), HttpStatus.CONFLICT);
+//        }
+//        try {
+//            user.setUsername(userDTO.getUsername());
+//            user.setEmail(userDTO.getEmail());
+//            user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+//
+//            if (multipartFile != null) {
+//                Media media = null;
+//                try {
+//                    media = Media.builder()
+//                            .originalFileName(multipartFile.getOriginalFilename())
+//                            .mediaType(multipartFile.getContentType())
+//                            .size(multipartFile.getSize())
+//                            .bytes(multipartFile.getBytes()).build();
+//                } catch (IOException e) {
+//                    throw new RuntimeException(e);
+//                }
+//                user.setAvatar(media);
+//            }
+//
+//            save(user);
+//            authentication = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword());
+//            SecurityContextHolder.getContext().setAuthentication(authentication);
+//            String jwt = jwtUtil.generateToken(user.getUsername());
+//
+//            List<String> authorities = user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
+//            return ResponseEntity.ok(new AuthControllerImpl.JwtResponse(jwt, user.getId(), user.getEmail(), user.getUsername(), authorities));
+//        } catch (RuntimeException e) {
+//            return ResponseEntity.badRequest().body("Пользователь с такой почтой уже существует");
+//        }
+//    }
 
     /**
      *

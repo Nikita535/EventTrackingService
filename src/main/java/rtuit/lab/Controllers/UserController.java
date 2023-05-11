@@ -1,5 +1,6 @@
 package rtuit.lab.Controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import rtuit.lab.Controllers.ControllerImpl.AuthControllerImpl;
 import rtuit.lab.DTO.UserDTO;
 
@@ -25,7 +27,7 @@ public interface UserController {
                     @ApiResponse(responseCode = "401")
             }
     )
-    ResponseEntity<?> editController(@RequestBody UserDTO userDTO, Authentication authentication);
+    ResponseEntity<?> editController(@RequestBody String JsonUserDTO, Authentication authentication,@RequestParam(value = "file", required = false) MultipartFile multipartFile) throws JsonProcessingException;
     @Operation(
             tags = "Удалить пользователя",
             summary = "Удаление пользователя",

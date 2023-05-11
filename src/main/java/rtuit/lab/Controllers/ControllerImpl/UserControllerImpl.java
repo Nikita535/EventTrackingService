@@ -1,11 +1,13 @@
 package rtuit.lab.Controllers.ControllerImpl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import rtuit.lab.Controllers.UserController;
 import rtuit.lab.DTO.UserDTO;
 import rtuit.lab.Services.ServiceImpl.RegistrationService;
@@ -26,13 +28,13 @@ public class UserControllerImpl implements UserController {
 
     /**
      *
-     * @param userDTO
+     * @param JsonUserDTO
      * @param authentication
      * @return
      */
     @PostMapping("/edit")
-    public ResponseEntity<?> editController(@RequestBody UserDTO userDTO, Authentication authentication){
-        return userService.userEdit(userDTO,authentication);
+    public ResponseEntity<?> editController(@RequestBody String JsonUserDTO, Authentication authentication,@RequestParam(value = "file", required = false) MultipartFile multipartFile) throws JsonProcessingException {
+        return userService.userEdit(JsonUserDTO,authentication,multipartFile);
     }
 
 
@@ -48,9 +50,9 @@ public class UserControllerImpl implements UserController {
     }
 
 
-    @PostMapping("/getAllUsers")
+    @GetMapping("/getAllUsers")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<?> allUsers(Integer pageNumber){
+    public ResponseEntity<?> allUsers(@RequestParam(defaultValue = "0") Integer pageNumber){
         return userService.getAllUsers(pageNumber);
     }
 
