@@ -46,7 +46,7 @@ public class RegistrationService implements rtuit.lab.Services.RegistrationServi
         try {
             User user = userRepository.findByUsername(principal.getName()).get();
             Event event = eventRepository.findEventByTag(tag).get();
-//            sendMessageAboutRegisterOnEvent(user,event);
+            sendMessageAboutRegisterOnEvent(user,event);
            return ResponseEntity.ok(registrationRepository.save(Registration.builder()
                     .user(user)
                     .event(event)

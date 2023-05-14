@@ -115,7 +115,7 @@ public class UserService implements UserDetailsService, rtuit.lab.Services.UserS
                 .email(registerRequestDTO.getEmail())
                 .username(registerRequestDTO.getUsername())
                 .password(passwordEncoder.encode(registerRequestDTO.getPassword()))
-                .authorities(Set.of(Role.ROLE_ORGANIZER))
+                .authorities(Set.of(Role.ROLE_USER))
                 .active(false).build()
         );
     }
@@ -257,53 +257,6 @@ public class UserService implements UserDetailsService, rtuit.lab.Services.UserS
             throw new RuntimeException(e);
         }
     }
-//    @Loggable
-//    public ResponseEntity<?> userEdit(String JsonUserDTO, Authentication authentication, MultipartFile multipartFile)  {
-//        User user = getUserAuth(authentication);
-//
-//        UserDTO userDTO= null;
-//        try {
-//            userDTO = new ObjectMapper().readValue(JsonUserDTO, UserDTO.class);
-//        } catch (JsonProcessingException e) {
-//            throw new RuntimeException(e);
-//        }
-//        SpringValidatorAdapter springValidator = new SpringValidatorAdapter(validator);
-//        BindingResult bindingResult = new BeanPropertyBindingResult(userDTO, "UserDtoResult");
-//        springValidator.validate(userDTO, bindingResult);
-//
-//        if (bindingResult.hasErrors()) {
-//            return new ResponseEntity<>(bindingResult.getFieldErrors(), HttpStatus.CONFLICT);
-//        }
-//        try {
-//            user.setUsername(userDTO.getUsername());
-//            user.setEmail(userDTO.getEmail());
-//            user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-//
-//            if (multipartFile != null) {
-//                Media media = null;
-//                try {
-//                    media = Media.builder()
-//                            .originalFileName(multipartFile.getOriginalFilename())
-//                            .mediaType(multipartFile.getContentType())
-//                            .size(multipartFile.getSize())
-//                            .bytes(multipartFile.getBytes()).build();
-//                } catch (IOException e) {
-//                    throw new RuntimeException(e);
-//                }
-//                user.setAvatar(media);
-//            }
-//
-//            save(user);
-//            authentication = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword());
-//            SecurityContextHolder.getContext().setAuthentication(authentication);
-//            String jwt = jwtUtil.generateToken(user.getUsername());
-//
-//            List<String> authorities = user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
-//            return ResponseEntity.ok(new AuthControllerImpl.JwtResponse(jwt, user.getId(), user.getEmail(), user.getUsername(), authorities));
-//        } catch (RuntimeException e) {
-//            return ResponseEntity.badRequest().body("Пользователь с такой почтой уже существует");
-//        }
-//    }
 
     /**
      *

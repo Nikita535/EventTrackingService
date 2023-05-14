@@ -92,7 +92,7 @@ public class EventService implements rtuit.lab.Services.EventService {
                 .build();
         try {
             eventRepository.save(event);
-//            sendingMessage(event);
+            sendingMessage(event);
             return ResponseEntity.ok().body(event);
         }catch (Exception ex) {
             throw new UnusualException("Что-то пошло не так на стороне сервера. Сообщите о проблеме администрации.");
@@ -146,7 +146,7 @@ public class EventService implements rtuit.lab.Services.EventService {
     public ResponseEntity<?> checkEventMembers(String tag, Principal principal,Integer pageNumber){
 
         User userAuth = getUserAuth(principal);
-        Long id = eventRepository.findEventByTag(tag).orElseThrow().getId();
+        Long id = eventRepository.findEventByTag(tag).orElseThrow().getUser_id();
         Pageable paging = PageRequest.of(pageNumber, 10, Sort.by("id"));
         if (userAuth.getId().equals(id)){
             return ResponseEntity.ok(registrationRepository.findAllByEvent_Tag(tag,paging));
