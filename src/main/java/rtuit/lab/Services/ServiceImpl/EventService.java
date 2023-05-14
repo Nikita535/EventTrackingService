@@ -109,7 +109,7 @@ public class EventService implements rtuit.lab.Services.EventService {
     @Loggable
     public ResponseEntity<?> deleteEvent(EventDTO eventDTO,Principal principal) {
         User userAuth = getUserAuth(principal);
-        Long id = eventRepository.findEventByTag(eventDTO.getTag()).orElseThrow().getId();
+        Long id = eventRepository.findEventByTag(eventDTO.getTag()).orElseThrow().getUser_id();
         if (userAuth.getId().equals(id)){
             Event event = eventRepository.findEventByTag(eventDTO.getTag()).get();
             registrationRepository.deleteAllByEvent(event);
