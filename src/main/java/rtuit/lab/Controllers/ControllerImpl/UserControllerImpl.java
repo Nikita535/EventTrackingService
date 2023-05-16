@@ -33,7 +33,7 @@ public class UserControllerImpl implements UserController {
      * @return
      */
     @PostMapping("/edit")
-    public ResponseEntity<?> editController(@RequestBody String JsonUserDTO, Authentication authentication,@RequestParam(value = "file", required = false) MultipartFile multipartFile) throws JsonProcessingException {
+    public ResponseEntity<?> editController(@RequestParam String JsonUserDTO, Authentication authentication,@RequestParam(value = "file", required = false) MultipartFile multipartFile) throws JsonProcessingException {
         return userService.userEdit(JsonUserDTO,authentication,multipartFile);
     }
 
